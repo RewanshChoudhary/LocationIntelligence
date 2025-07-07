@@ -9,7 +9,7 @@ import org.apache.kafka.common.metrics.Sensor;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
+
 @NoArgsConstructor
 
 
