@@ -22,6 +22,7 @@ public class LiveDataFetchingFromKafkaService {
       //Gives a tick every 10 sec to tranfer data to the subscribed endpoint
 
 
+
     public void  getLiveSensorData(String sensor_type, String locationName) {
         if (lastUpdated == null) lastUpdated = LocalDateTime.now().minusSeconds(10);
         List<QueryResponseDto> newData = sensorDataEntityRepository.getLiveSensorData(sensor_type, locationName, lastUpdated);
