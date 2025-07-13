@@ -1,76 +1,44 @@
+import {type SensorData, SocketService} from "./socketService.ts";
 import {useEffect, useState} from "react";
-import {connectWebsocket, disconnectWebSocket, type SensorData, startTriggerPolling} from "./socketService.ts";
 
-function App()
-{
-    const [sensorData,setSensorData]=useState<SensorData[]>([])
+const socketService = new SocketService()
+
+
+function App() {
+
+    const [sensorDataList, setSensorDataList] = useState<SensorData[]>([]);
+
+    const triggerBackend = async () => {
+        try {
+            const trigger = await fetch("http://localhost:8080/api/live-data/trigger",
+                {method : "GET"})
+
+            if (!trigger.ok) {
+                throw new Error("The triggering didnt happen")
+            }
+        } catch (error) {
+            console.error("An error occured", error)
+
+        }
+    }
 
     useEffect(() => {
-        connectWebsocket((newData: SensorData[])=> {
-            setSensorData(prevState => [...prevState, ...newData])
+        socketService.connect((data) => {
+            setSensorDataList((prev) => [...data, ...prev]);
         });
 
+        const startPolling=setInterval(triggerBackend,5000)
 
-   const startPolling =startTriggerPolling("PM25","Delhi")
 
         return ()=>{
-       disconnectWebSocket()
+            socketService.disconnect();
             clearInterval(startPolling)
 
         }
 
 
+    })
 
 
-
-
-
-
-    }, []);
-
-    return  (
-        <div style={{fontFamily:"monospace",fontSize:"1rem"}}>
-            <h1> Live Sensor Data </h1>
-            {
-                sensorData.length==0?(
-                    <p> Data not available yet </p>)
-                    :(
-                        <table border={1} cellPadding={8}>
-                            <thead>
-                            <tr>
-                                <th>Sensor</th>
-                                <th>Value</th>
-                                <th>Unit</th>
-                                <th>Time</th>
-                                <th>Name</th>
-                                <th>Category</th>
-                                <th>Distance</th>
-                                <th>Location (GeoJSON)</th>
-
-
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {sensorData.map((data, i) => (
-                                <tr key={i}>
-                                    <td>{data.sensorType}</td>
-                                    <td>{data.value}</td>
-                                    <td>{data.unit}</td>
-                                    <td>{data.timeStamp}</td>
-                                    <td>{data.name}</td>
-                                    <td>{data.category}</td>
-                                    <td>{data.distance.toFixed(2)} m</td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                )
-            }
-
-
-        </div>
-    )
 
 }
-
-export default App;
