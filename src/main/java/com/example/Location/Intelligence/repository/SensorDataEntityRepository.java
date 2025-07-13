@@ -107,7 +107,7 @@ select sensor_type,
         AND name = :locName
         AND time_stamp >= :currTime
     """,nativeQuery = true)
-List <QueryResponseDto> getLiveSensorData(@Param("type") String type,@Param("name") String locName,@Param("currTime") LocalDateTime currTime);
+List <QueryResponseDto> getLiveSensorData(@Param("type") String type,@Param("locName") String locName,@Param("currTime") LocalDateTime currTime);
 
 
 @Query(value ="""
@@ -120,13 +120,13 @@ List <QueryResponseDto> getLiveSensorData(@Param("type") String type,@Param("nam
         ST_AsGeoJSON(location) AS locationGeoJson
      
         FROM sensor_data_entity
-        WHERE location = :locName
+        WHERE name = :locName
         and sensor_type= :sensorType
         
         ORDER BY value desc
         limit :ranking
               """,nativeQuery = true)
-public List<QueryResponseDto> getPeaksInListing(@Param("locName") String locName,@Param("sensorType") String sensorType,@Param("ranking") int ranking);
+ List<QueryResponseDto> getPeaksInListing(@Param("locName") String locName,@Param("sensorType") String sensorType,@Param("ranking") int ranking);
 
 
 }
