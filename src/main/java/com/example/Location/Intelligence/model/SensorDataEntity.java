@@ -24,18 +24,19 @@ public class SensorDataEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
+    @Column(name="sensor_type")
     private String sensorType;
     private float value;
     private String unit;
 
-
+    @Column(name="time_stamp")
     private String timeStamp;
 
     @Embedded
     private LocationInfo locationInfo;
 
     @CreationTimestamp
+    @Column(name="created_at")
     private LocalDateTime createdAt;
 
     public SensorDataEntity(SensorData sensorData) {

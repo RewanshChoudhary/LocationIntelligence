@@ -1,44 +1,42 @@
 package com.example.Location.Intelligence.service;
 
-import com.example.Location.Intelligence.dto.QueryResponseDto;
 
-import com.example.Location.Intelligence.repository.SensorDataEntityRepository;
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
 import java.time.LocalDateTime;
-import java.util.List;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-@RequiredArgsConstructor
-public class LiveDataFetchingFromKafkaService {
-    private final SensorDataEntityRepository sensorDataEntityRepository;
-    private static LocalDateTime lastUpdated;
-    private final SimpMessagingTemplate messagingTemplate;
+//topic
+public class LiveDataFetchingFromKafkaService{
 
-      //Gives a tick every 10 sec to tranfer data to the subscribed endpoint
+    // stores current items to request
+    private final Map<String , LocalDateTime> lastUpdated=new ConcurrentHashMap<>();
+    @EventListener
+
+    public void handleWebsocketSubscribeEvent(SessionSubscribeEvent session){
+         // Provides destiantion endpoint for websocket connections to extreact the sensor_type and name
+
+       String destination=session.getMessage().getHeaders().get("simpDestination").toString();
+
+       if (destination!=null && destination.startsWith("/topic/sensor-data/")){
+           String[] params=destination.split("/");
+           String sensorType=params[3];
+           String locationName=params[4];
+           String key=sensorType+":"+locationName;
+
+           lastUpdated.putIfAbsent(key,LocalDateTime.now().minusSeconds(10));
 
 
 
-    public void  getLiveSensorData(String sensor_type, String locationName) {
-        if (lastUpdated == null) lastUpdated = LocalDateTime.now().minusSeconds(10);
-        List<QueryResponseDto> newData = sensorDataEntityRepository.getLiveSensorData(sensor_type, locationName, lastUpdated);
-        lastUpdated = LocalDateTime.now();
 
-        if (!newData.isEmpty()) {
-            messagingTemplate.convertAndSend("/topic/sensor-updates", newData);
+
         }
+
+
     }
-
-
 }
-
-
-
-
-
-
-
