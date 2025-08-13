@@ -13,6 +13,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ConsumerListener {
     private final SensorDataEntityRepository sensorDataEntityRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
 
 
@@ -29,6 +31,7 @@ public class ConsumerListener {
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
         Point point =geometryFactory.createPoint(new Coordinate(sensorData.getLocationInfo().getLongitude(),sensorData.getLocationInfo().getLatitude()));
         sensorDataEntity.setLocation(point);
+        simpMessagingTemplate.convertAndSend("/topic/"+sensorDataEntity.getSensorType()+"/"+sensorDataEntity.getId(),sensorDataEntity);
         sensorDataEntityRepository.save(sensorDataEntity);
 
 

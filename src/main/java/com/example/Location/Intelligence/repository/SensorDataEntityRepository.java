@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,32 +20,26 @@ public interface SensorDataEntityRepository extends JpaRepository<SensorDataEnti
     @Query("DELETE FROM SensorDataEntity d WHERE d.createdAt < :cutoff")
     void deleteOlderThan(@Param("cutoff") LocalDateTime cutoff);
 
-
     @Query(value = """
     SELECT 
         sensor_type,
         value,
         unit,
         time_stamp,
-        name,
-        category,
+        location_info_name AS name,
+        location_info_category AS category,
         ST_AsGeoJSON(location) AS locationGeoJson
     FROM sensor_data_entity
     WHERE ST_DWithin(
         location::geography,
         ST_SetSRID(ST_MakePoint(:long, :lat), 4326)::geography,
-            
         5000
     )
     """, nativeQuery = true)
-
-    //Scans all the enteries at the range of 5 kms from a point
-
     List<Object[]> getAllSensorsWithinDist(
             @Param("long") double longitude,
             @Param("lat") double latitude
     );
-
 
     @Query(value = """
     SELECT 
@@ -54,8 +47,8 @@ public interface SensorDataEntityRepository extends JpaRepository<SensorDataEnti
         value,
         unit,
         time_stamp,
-        name,
-        category,
+        location_info_name AS name,
+        location_info_category AS category,
         ST_AsGeoJSON(location) AS locationGeoJson,
         ST_Distance(location::geography, ST_MakePoint(:long, :lat)::geography) AS distance
     FROM 
@@ -68,23 +61,18 @@ public interface SensorDataEntityRepository extends JpaRepository<SensorDataEnti
     """, nativeQuery = true)
     List<Object[]> getNearbySensorsRaw(@Param("long") double longitude, @Param("lat") double latitude);
 
-
-
     @Query(value = """
     SELECT 
         sensor_type,
         value,
         unit,
         time_stamp,
-        name,
-        category,
+        location_info_name AS name,
+        location_info_category AS category,
         ST_AsGeoJSON(location) AS locationGeoJson
     FROM sensor_data_entity
     WHERE location && ST_MakeEnvelope(:minlong, :minlat, :maxlong, :maxlat, 4326)
     """, nativeQuery = true)
-
-    //Scans for all enteries nearby in a defined subspace
-
     List<QueryResponseDto> getNearbySubspace(
             @Param("minlong") double minLong,
             @Param("minlat") double minLat,
@@ -92,43 +80,44 @@ public interface SensorDataEntityRepository extends JpaRepository<SensorDataEnti
             @Param("maxlat") double maxLat
     );
 
-
-@Query(value= """
-select sensor_type,
+    @Query(value = """
+    SELECT 
+        sensor_type,
         value,
         unit,
         time_stamp,
-        name,
-        category,
+        location_info_name AS name,
+        location_info_category AS category,
         ST_AsGeoJSON(location) AS locationGeoJson
-     
-        FROM sensor_data_entity
-        WHERE sensor_type = :type
-        AND name = :locName
-        AND time_stamp >= :currTime
-    """,nativeQuery = true)
-List <QueryResponseDto> getLiveSensorData(@Param("type") String type,@Param("locName") String locName,@Param("currTime") LocalDateTime currTime);
+    FROM sensor_data_entity
+    WHERE sensor_type = :type
+      AND location_info_name = :locName
+      AND time_stamp >= :currTime
+    """, nativeQuery = true)
+    List<QueryResponseDto> getLiveSensorData(
+            @Param("type") String type,
+            @Param("locName") String locName,
+            @Param("currTime") LocalDateTime currTime
+    );
 
-
-@Query(value ="""
-    select sensor_type,
+    @Query(value = """
+    SELECT 
+        sensor_type,
         value,
         unit,
         time_stamp,
-        name,
-        category,
+        location_info_name AS name,
+        location_info_category AS category,
         ST_AsGeoJSON(location) AS locationGeoJson
-     
-        FROM sensor_data_entity
-        WHERE name = :locName
-        and sensor_type= :sensorType
-        
-        ORDER BY value desc
-        limit :ranking
-              """,nativeQuery = true)
- List<QueryResponseDto> getPeaksInListing(@Param("locName") String locName,@Param("sensorType") String sensorType,@Param("ranking") int ranking);
-
-
+    FROM sensor_data_entity
+    WHERE location_info_name = :locName
+      AND sensor_type = :sensorType
+    ORDER BY value DESC
+    LIMIT :ranking
+    """, nativeQuery = true)
+    List<QueryResponseDto> getPeaksInListing(
+            @Param("locName") String locName,
+            @Param("sensorType") String sensorType,
+            @Param("ranking") int ranking
+    );
 }
-
-

@@ -22,7 +22,7 @@ public class QueryResponseDto {
     private String name;
     private String category;
     private String locationGeoJson;
-    private double distance;
+
     public QueryResponseDto(SensorDataEntity sensorDataEntity) {
         this.sensorType = sensorDataEntity.getSensorType();
         this.value = sensorDataEntity.getValue();
@@ -35,7 +35,7 @@ public class QueryResponseDto {
 
     }
 
-    public QueryResponseDto(String sensorType, double value, String unit, String timeStamp, String name, String category, String locationGeoJson, double distance) {
+    public QueryResponseDto(String sensorType, double value, String unit, String timeStamp, String name, String category, String locationGeoJson) {
         this.sensorType = sensorType;
         this.value = value;
         this.unit = unit;
@@ -43,7 +43,7 @@ public class QueryResponseDto {
         this.name = name;
         this.category = category;
         this.locationGeoJson = locationGeoJson;
-        this.distance = distance;
+
     }
 
 
