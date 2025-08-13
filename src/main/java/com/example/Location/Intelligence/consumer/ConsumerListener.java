@@ -31,7 +31,7 @@ public class ConsumerListener {
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
         Point point =geometryFactory.createPoint(new Coordinate(sensorData.getLocationInfo().getLongitude(),sensorData.getLocationInfo().getLatitude()));
         sensorDataEntity.setLocation(point);
-        simpMessagingTemplate.convertAndSend("/topic/"+sensorDataEntity.getSensorType()+"/"+sensorDataEntity.getId(),sensorDataEntity);
+        simpMessagingTemplate.convertAndSend("/topic/"+sensorDataEntity.getSensorType()+"/"+sensorDataEntity.getId()+"/"+sensorDataEntity.getLocationInfo().getName(),sensorDataEntity);
         sensorDataEntityRepository.save(sensorDataEntity);
 
 

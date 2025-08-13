@@ -12,6 +12,8 @@ import java.time.format.DateTimeFormatter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SensorData {
+    private int sensorId;
+
     private String sensorType;
     private float value;
     private String unit;

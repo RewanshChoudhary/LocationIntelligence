@@ -16,7 +16,7 @@ spring:
         default_schema: public
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: 127.0.0.1:9092
     topics:
       pm25: pm-25
     consumer:

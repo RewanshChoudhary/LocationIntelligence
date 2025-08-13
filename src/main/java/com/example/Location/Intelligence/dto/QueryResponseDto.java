@@ -30,6 +30,8 @@ public class QueryResponseDto {
         this.timeStamp = sensorDataEntity.getTimeStamp();
         this.category=sensorDataEntity.getLocationInfo().getCategory();
         this.name=sensorDataEntity.getLocationInfo().getName();
+    
+
         this.locationGeoJson= GeoJsonUtil.toGeoJson(sensorDataEntity.getLocation());
 
 

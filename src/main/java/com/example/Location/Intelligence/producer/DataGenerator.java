@@ -16,7 +16,7 @@ public class DataGenerator {
         JsonValue jsonValue = new JsonValue();
         int index= ThreadLocalRandom.current().nextInt(0, 20);
         float value = getPM25ByCategory(jsonValue.getSamples().get(index).getCategory());
-
+        pm25.setValue(1);
         pm25.setSensorType("PM25");
         pm25.setUnit("µg/m³");
         pm25.setValue(value);
@@ -31,11 +31,13 @@ public class DataGenerator {
         SensorData co=new SensorData();
         JsonValue jsonValue = new JsonValue();
 
+
         int index=ThreadLocalRandom.current().nextInt(0, 20);
         float value = getCOByCategory(jsonValue.getSamples().get(index).getCategory());
        co.setSensorType("CO");
        co.setValue(value);
         co.setLocationInfo(jsonValue.getSamples().get(index));
+        co.setSensorId(2);
         return co;
 
     }

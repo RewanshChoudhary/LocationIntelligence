@@ -24,6 +24,11 @@ public class SensorDataEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+
+
+    private int sensorId;
+
     @Column(name="sensor_type")
     private String sensorType;
     private float value;
